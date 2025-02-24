@@ -2,7 +2,7 @@
   <div class="header">
     <v-row>
       <v-col cols="4" class="d-flex">
-        <v-btn class="m3" icon="mdi-menu" variant="text"></v-btn>
+        <v-btn class="m3" icon="mdi-menu" @click="menu = !menu" variant="text"></v-btn>
         <v-btn prepend-icon="mdi-plus" variant="text" @click="newChat">NEW CHAT</v-btn>
         <v-checkbox label="Show Think" hide-details class="m3"></v-checkbox>
       </v-col>
@@ -12,7 +12,7 @@
     </v-row>
   </div>
   <v-row class="body">
-    <v-col cols="2">
+    <v-col v-if="menu" cols="2">
       <v-list dense>
         <v-list-item v-for="(chat, index) in chatHistory" :key="index" @click="selectChat(index)">
           <v-list-item-content>
@@ -64,6 +64,7 @@ export default {
   },
   data() {
     return {
+      menu: true,
       messages: [],
       newMessage: "",
       loading: false,
@@ -111,14 +112,13 @@ export default {
           messages: [{ role: "user", content: this.newMessage }],
           model: "llama-3.3-70b-versatile",
         });
-
         const aiResponse =
           response.choices[0]?.message?.content || "Không có phản hồi.";
         this.messages.push({ sender: "AI", text: aiResponse });
         if (this.currentChatIndex !== null) {
           this.chatHistory[this.currentChatIndex] = [...this.messages];
         }
-        console.log(this.chatHistory)
+        console.log(response)
       } catch (error) {
         console.error("Lỗi khi gọi API Groq AI:", error);
         this.messages.push({ sender: "AI", text: "Xin lỗi, có lỗi xảy ra." });

@@ -10,7 +10,10 @@
     
     <v-list dense>
       <v-list-item v-for="(doanvan, index) in processedData" :key="index">
-        <p :class="{ 'text-primary': doanvan.role === 'Lan' }" v-html="doanvan.text"></p>
+        <p 
+          :class="{ 'text-primary': doanvan.role === 'Lan' }" 
+          v-html="getHighlightedText(doanvan.text)">
+        </p>
       </v-list-item>
     </v-list>
   </div>
@@ -738,36 +741,37 @@ export default {
   },
   computed: {
     processedData() {
-      return this.data;
-    }
+      return this.data.map((item) => ({
+        ...item,
+        words: item.text.split(" "),
+      }));
+    },
   },
   methods: {
     updateHighlight() {
-      this.currentTime = this.$refs.audioPlayer.currentTime * 1000; // Convert to milliseconds
+      this.currentTime = this.$refs.audioPlayer.currentTime * 950;
+      this.$forceUpdate();
     },
-    highlightText(text) {
-      let words = text.split(" ");
-      let highlightedText = words
-        .map((word) => {
-          let match = this.timestamp.find(
-            (t) => this.currentTime >= t[0] && this.currentTime <= t[0] + t[1]
+    getHighlightedText(text) {
+      let highlightedText = text;
+      this.timestamp.forEach(([startTime, duration, word]) => {
+        if (this.currentTime >= startTime && this.currentTime <= startTime + duration) {
+          highlightedText = highlightedText.replace(
+            word,
+            `<span class="highlight">${word}</span>`
           );
-          if (match && match[2] === word) {
-            return `<span style="color: red; font-weight: bold;">${word}</span>`;
-          }
-          return word;
-        })
-        .join(" ");
-
+        }
+      });
       return highlightedText;
-    }
+    },
   }
 };
 </script>
 
 <style>
-.highlighted {
-  background-color: yellow;
-  color: white;
-}
+  .highlight {
+    background-color: yellow;
+    font-weight: bold;
+    padding: 2px 4px;
+  }
 </style>
