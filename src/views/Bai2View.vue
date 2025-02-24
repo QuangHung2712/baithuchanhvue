@@ -9,7 +9,7 @@
                 <div class="content">
                     <v-card>
                         <!-- <strong>{{ message.sender }}:</strong> -->
-                        <vue-markdown-it class="text-left" :source="message.text" />
+                        {{ message.text }}
                     </v-card>
                 </div>
             </v-list-item>
@@ -77,9 +77,14 @@
   .v-card {
     width: fit-content;
     max-width: 80%;
+    margin: 10px;
     padding: 10px;
     word-wrap: break-word;
     border-radius: 25px;
     }
+  .user-message .content{
+    display: flex;
+    justify-content: flex-end;
+  }
   </style>
   
